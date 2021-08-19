@@ -15,6 +15,7 @@ import android.view.View.OnLongClickListener
 import android.view.View.OnTouchListener
 import java.lang.Thread.currentThread
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.log
 
 
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        ramdomColor()
         layout.setOnTouchListener(object : OnTouchListener {
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
                 when (event?.action) {
@@ -68,10 +69,10 @@ class MainActivity : AppCompatActivity() {
                     }
                     MotionEvent.ACTION_MOVE -> {
                         y2 = event.y.toInt()
-                        if (y2 - 5 < y1) {
+                        if (y2 < y1) {
                             textView.text =
                                 (textView.text.toString().toInt() + 1).toString()
-                        } else if (y2 - 5 > y1) {
+                        } else {
                             textView.text =
                                 (textView.text.toString().toInt() - 1).toString()
                         }
@@ -144,34 +145,35 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-        ramdomColor()
     }
 
     fun startThread() {
         synchronized(this) { check = true }
         thread = Thread(runnable)
-        mHandler.postDelayed({ thread.start() }, 1000L)
+        mHandler.postDelayed({ thread.start() }, 2000)
     }
 
     fun stopThread() {
         synchronized(this) { check = false }
         mHandler.removeCallbacksAndMessages(null)
-        currentThread().interrupt()
         if (!thread.isInterrupted)
-            thread?.interrupt()
+            thread.interrupt()
     }
 
     fun ramdomColor() {
-        var threadColor = Thread(Runnable{
+        var threadColor = Thread(Runnable {
             val rnd = Random()
             while (true) {
-                val color: Int =
-                    Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-                try {
-                    Thread.sleep(8000)
-                    textView.setTextColor(color)
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
+                var count = textView.text.toString().toInt()
+                if (count != 0) {
+                    val color: Int =
+                        Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+                    try {
+                        Thread.sleep(4000)
+                        textView.setTextColor(color)
+                    } catch (e: InterruptedException) {
+                        e.printStackTrace()
+                    }
                 }
             }
         })
