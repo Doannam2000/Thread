@@ -21,6 +21,7 @@ import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
     val MSG_PLUS: Int = 10
+    val MSG_COLOR:Int = 11
     var y1 = 0
     var y2 = 0
     var check = true
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
             super.handleMessage(msg)
             when (msg.what) {
                 MSG_PLUS -> textView.text = msg.arg1.toString()
+                MSG_COLOR -> textView.setTextColor(msg.arg1.toString().toInt())
             }
         }
     }
@@ -169,8 +171,11 @@ class MainActivity : AppCompatActivity() {
                     val color: Int =
                         Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
                     try {
+                        val message = Message()
+                        message.what = MSG_COLOR
+                        message.arg1 = color
                         Thread.sleep(4000)
-                        textView.setTextColor(color)
+                        mHandler.sendMessage(message)
                     } catch (e: InterruptedException) {
                         e.printStackTrace()
                     }
